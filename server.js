@@ -51,7 +51,18 @@ app.post('/todos',function (req,res){
 });
 
 
+app.delete('/todos/:id',function (req, res){
+	var matchedTodo;
+	var todoId = parseInt(req.params.id,10);
+	matchedTodo = _.findWhere(todos,{id: todoId});
 
+	if (matchedTodo){
+		todos = _.without(todos,{id : todoId});
+		res.json(matchedTodo);
+	}else{
+		res.status(404).json({"error": "no todo found with this id"});
+	}
+});
 app.listen(PORT, function (){
 	console.log('Starting raunaq\'s server on port ' + PORT);
 });
