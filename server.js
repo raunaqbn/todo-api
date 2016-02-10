@@ -1,12 +1,15 @@
 var express = require('express');
 var app = express();
 var PORT = process.env.PORT || 3000;
+var _ = require('underscore');
 var bodyParser = require('body-parser');
 var todos = [];
 var todoNextId =1;
 
 //Use the body parser
 app.use(bodyParser.json());
+
+
 
 app.get('/', function (req,res){
 	res.send('To do API Root');
@@ -19,11 +22,8 @@ app.get('/todos',function (req,res){
 app.get('/todos/:id',function (req,res){
 	// res.send('requesting for todo id : '+ req.params.id);
 	var matchedTodo;
-	todos.forEach(function (todo){
-		if (todo.id === parseInt(req.params.id,10)) {
-			matchedTodo = todo;
-		}
-	});
+	var topoId = parseInt(req.params.id,10);
+	matchedTodo = _.findWhere(todos,{id: topoId});
 
 	if (matchedTodo){
 		res.json(matchedTodo);
@@ -33,14 +33,24 @@ app.get('/todos/:id',function (req,res){
 });
 
 
+
+
 app.post('/todos',function (req,res){
-	var body = req.body;
-	console.log(body);
+
+	var body = _.pick(req.body,'description','completed');
+	var temp =body.completed;
+	console.log(_.isString(body.description));
+	if (!(body.completed === 'true' || body.completed === 'false') || !_.isString(body.description) || body.description.trim().length === 0){
+		return res.status(400).send();
+	}
+	body.description = body.description.trim();
 	//set the body id
 	body.id = todoNextId++;
 	todos.push(body);
 	res.json(body);
 });
+
+
 
 app.listen(PORT, function (){
 	console.log('Starting raunaq\'s server on port ' + PORT);
