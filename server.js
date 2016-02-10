@@ -22,8 +22,8 @@ app.get('/todos',function (req,res){
 app.get('/todos/:id',function (req,res){
 	// res.send('requesting for todo id : '+ req.params.id);
 	var matchedTodo;
-	var topoId = parseInt(req.params.id,10);
-	matchedTodo = _.findWhere(todos,{id: topoId});
+	var todoId = parseInt(req.params.id,10);
+	matchedTodo = _.findWhere(todos,{id: todoId});
 
 	if (matchedTodo){
 		res.json(matchedTodo);
