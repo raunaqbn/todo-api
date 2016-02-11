@@ -39,7 +39,7 @@ app.post('/todos',function (req,res){
 
 	var body = _.pick(req.body,'description','completed');
 	var temp =body.completed;
-	if (!(body.completed === 'true' || body.completed === 'false') || !_.isString(body.description) || body.description.trim().length === 0){
+	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0){
 		return res.status(400).send();
 	}
 	body.description = body.description.trim();
@@ -49,6 +49,34 @@ app.post('/todos',function (req,res){
 	res.json(body);
 });
 
+
+app.put('/todos/:id',function (req,res){
+	var matchedTodo;
+	var todoId = parseInt(req.params.id,10);
+	var body = _.pick(req.body,'description','completed');
+	var validAttributes = {};
+	matchedTodo = _.findWhere(todos,{id: todoId});
+
+	if(!matchedTodo){
+		res.status(404).send();
+	}
+
+	if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)){
+		validAttributes.completed = body.completed;
+	}else if(body.hasOwnProperty('completed')){
+		res.status(400).send();
+	}
+
+	if (body.hasOwnProperty('description') && _.isString(body.description)){
+		validAttributes.description = body.description.trim();
+	}else if(body.hasOwnProperty('description')){
+		res.status(400).send();
+	}
+
+	_.extend(matchedTodo,validAttributes);
+	res.json(matchedTodo);
+
+});
 
 app.delete('/todos/:id',function (req, res){
 	var matchedTodo;
