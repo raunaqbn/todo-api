@@ -18,11 +18,18 @@ app.get('/', function (req,res){
 app.get('/todos',function (req,res){
 	var filteredTodos = todos;
 	var queryParams = req.query;
-	console.log(queryParams);
 	if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true'){
-		filteredTodos = _.where(todos, {completed : true});
+		filteredTodos = _.where(filteredTodos, {completed : true});
 	}else if(queryParams.hasOwnProperty('completed') && queryParams.completed === 'false'){
-		filteredTodos = _.where(todos, {completed : false});
+		filteredTodos = _.where(filteredTodos, {completed : false});
+	}
+
+
+	if(queryParams.hasOwnProperty('q') && queryParams.q.length > 0){
+		filteredTodos = _.filter(filteredTodos, function (todo) {
+			console.log(todo);
+			return todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) > -1;
+		});
 	}
 
 	res.json(filteredTodos);
